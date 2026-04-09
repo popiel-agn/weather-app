@@ -11,10 +11,6 @@ object WeatherApi {
 
     private const val BASE_URL = "https://api.weatherapi.com"
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
@@ -26,7 +22,7 @@ object WeatherApi {
             .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(
-                json.asConverterFactory("application/json".toMediaType()
+                Json.asConverterFactory("application/json".toMediaType()
                 )
             )
             .build()

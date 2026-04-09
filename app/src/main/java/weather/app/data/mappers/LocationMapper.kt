@@ -6,7 +6,7 @@ import weather.app.models.Location
 fun LocationSearchDTO.toDomain(): Location {
     return Location(
         name = name,
-        region = region,
+        region = region.ifEmpty { null },
         country = country,
         lat = lat,
         lon = lon

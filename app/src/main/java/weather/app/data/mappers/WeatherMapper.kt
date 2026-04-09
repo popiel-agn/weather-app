@@ -8,7 +8,8 @@ fun CurrentWeatherDTO.toDomain(): Weather {
         location = Weather.Location(
             name = location.name,
             country = location.country,
-            localTime = location.localTime
+            localTime = location.localTime,
+            region = location.region.ifEmpty { null }
         ),
         current = Weather.Current(
             temperatureC = current.tempC,
