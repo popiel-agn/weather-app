@@ -2,25 +2,45 @@ package weather.app.data.mappers
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import weather.app.data.remote.dto.LocationSearchDTO
+import weather.app.data.remote.dto.LocationDTO
 
 class LocationMapperTests {
     
     @Test
-    fun `LocationSearchDTO to Location mapping`() {
-        val locationSearchDTO = LocationSearchDTO(
-            id = 1976891,
+    fun `LocationSearchDTO to Location mapping handles empty strings`() {
+        val locationDTO = LocationDTO(
             name = "Poznan",
             region = "",
             country = "Country",
             lat = 40.7128,
-            lon = -74.006
+            lon = -74.006,
+            localTime = ""
         )
 
-        val location = locationSearchDTO.toDomain()
+        val location = locationDTO.toDomain()
 
-        assertEquals(locationSearchDTO.name, location.name)
-        assertEquals(locationSearchDTO.country, location.country)
+        assertEquals(locationDTO.name, location.name)
+        assertEquals(locationDTO.country, location.country)
         assertEquals(null, location.region)
+        assertEquals(null, location.localTime)
+    }
+
+    @Test
+    fun `LocationSearchDTO to Location mapping handles null localtime`() {
+        val locationDTO = LocationDTO(
+            name = "Poznan",
+            region = "",
+            country = "Country",
+            lat = 40.7128,
+            lon = -74.006,
+            localTime = null
+        )
+
+        val location = locationDTO.toDomain()
+
+        assertEquals(locationDTO.name, location.name)
+        assertEquals(locationDTO.country, location.country)
+        assertEquals(null, location.region)
+        assertEquals(null, location.localTime)
     }
 }

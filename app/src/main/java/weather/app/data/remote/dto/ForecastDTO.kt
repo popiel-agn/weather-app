@@ -1,27 +1,29 @@
 package weather.app.data.remote.dto
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
 data class ForecastDTO(
-    val location: Location,
-    val forecast: Forecast
+    val location: LocationDTO,
+    val forecast: ForecastListDTO
 ) {
     @Serializable
-    data class Forecast(
-        val forecastDay: List<ForecastDay>
+    data class ForecastListDTO(
+        @SerialName("forecastday")
+        val forecastDay: List<ForecastDayDTO>
     )
 
     @Serializable
-    data class ForecastDay(
+    data class ForecastDayDTO(
         val date: String,
-        val day: Day
+        val day: DayDTO
     )
 
     @Serializable
-    data class Day(
+    data class DayDTO(
         val avgTempC: Double,
-        val condition: Condition
+        val condition: ConditionDTO
     )
 }

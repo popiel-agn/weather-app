@@ -2,6 +2,7 @@ package weather.app.repository
 
 import weather.app.data.mappers.toDomain
 import weather.app.data.remote.WeatherService
+import weather.app.models.Forecast
 import weather.app.models.Location
 import weather.app.models.Weather
 import weather.app.utils.Result
@@ -22,6 +23,18 @@ class WeatherRepositoryImpl(
             Result.Failure("Couldn't fetch current weather for location: $location", e)
         }
     }
+
+    override suspend fun getForecast(
+        apiKey: String,
+        location: String,
+        days: Int
+    ): Result<Forecast> {
+        return try {
+            val forecastResponse = weatherService.getForecast(apiKey, location, days).toDomain()
+            Result.Success(forecastResponse)
+        } catch (e: Exception) {
+            Result.Failure("Couldn't fetch forecast for location: $location", e)
+        }    }
 
     override suspend fun searchLocation(
         apiKey: String,

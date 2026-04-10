@@ -3,13 +3,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CurrentWeatherDTO(
-    val location: Location,
+    val location: LocationDTO,
     val current: Current
 ) {
     @Serializable
     data class Current(
         val tempC: Double,
-        val condition: Condition,
+        val condition: ConditionDTO,
         val windKph: Double,
         val humidity: Int,
         val feelsLikeC: Double

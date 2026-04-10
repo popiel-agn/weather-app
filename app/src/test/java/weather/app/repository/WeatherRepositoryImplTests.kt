@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import weather.app.data.remote.WeatherService
-import weather.app.data.remote.dto.Condition
+import weather.app.data.remote.dto.ConditionDTO
 import weather.app.data.remote.dto.CurrentWeatherDTO
 import weather.app.data.remote.dto.CurrentWeatherDTO.Current
-import weather.app.data.remote.dto.Location
+import weather.app.data.remote.dto.ForecastDTO
+import weather.app.data.remote.dto.LocationDTO
 import weather.app.utils.Result
 
 class WeatherRepositoryImplTests {
@@ -23,27 +24,23 @@ class WeatherRepositoryImplTests {
     fun `getCurrentWeather returns Success`() = runBlocking {
         // Given
         val currentWeatherDTO = CurrentWeatherDTO(
-            location = Location(
+            location = LocationDTO(
                 name = "Poznan",
                 region = "",
                 country = "Poland",
                 lat = 52.4167,
                 lon = 16.9667,
                 localTime = "2026-04-09 22:38"
-            ),
-            current = Current(
-                tempC = 2.1,
-                condition = Condition(
-                    text = "Clear",
-                    icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
-                ),
-                windKph = 13.7,
-                humidity = 55,
-                feelsLikeC = -1.6
+            ), current = Current(
+                tempC = 2.1, condition = ConditionDTO(
+                    text = "Clear", icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
+                ), windKph = 13.7, humidity = 55, feelsLikeC = -1.6
             )
         )
 
-        whenever(api.getCurrentWeather(apiKey = apiKey, location = "Poznan")).thenReturn(currentWeatherDTO)
+        whenever(api.getCurrentWeather(apiKey = apiKey, location = "Poznan")).thenReturn(
+            currentWeatherDTO
+        )
 
         // When
         val result = repository.getCurrentWeather(apiKey = apiKey, location = "Poznan")
@@ -59,5 +56,48 @@ class WeatherRepositoryImplTests {
 
         // Then
         assertTrue(result is Result.Failure)
+    }
+
+    @Test
+    fun `getForecast() returns Success`() = runBlocking {
+        // Given
+        val forecastDTO = ForecastDTO(
+            location = LocationDTO(
+                name = "Poznan",
+                region = "",
+                country = "Poland",
+                lat = 52.4167,
+                lon = 16.9667,
+                localTime = "2026-04-09 22:38"
+            ), forecast = ForecastDTO.ForecastListDTO(
+                listOf(
+                    ForecastDTO.ForecastDayDTO(
+                        date = "2026-04-10", day = ForecastDTO.DayDTO(
+                            avgTempC = 6.2, condition = ConditionDTO(
+                                text = "Clear",
+                                icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
+                            )
+                        )
+                    ), ForecastDTO.ForecastDayDTO(
+                        date = "2026-04-11", day = ForecastDTO.DayDTO(
+                            avgTempC = 4.9, condition = ConditionDTO(
+                                text = "Clear",
+                                icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        whenever(api.getForecast(apiKey = apiKey, location = "Poznan", days = 2)).thenReturn(
+            forecastDTO
+        )
+
+        // When
+        val result = repository.getForecast(apiKey = apiKey, location = "Poznan", days = 2)
+
+        // Then
+        assertTrue(result is Result.Success)
     }
 }

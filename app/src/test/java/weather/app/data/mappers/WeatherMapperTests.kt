@@ -2,17 +2,17 @@ package weather.app.data.mappers
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import weather.app.data.remote.dto.Condition
+import weather.app.data.remote.dto.ConditionDTO
 import weather.app.data.remote.dto.CurrentWeatherDTO
 import weather.app.data.remote.dto.CurrentWeatherDTO.Current
-import weather.app.data.remote.dto.Location
+import weather.app.data.remote.dto.LocationDTO
 
 class WeatherMapperTests {
     
     @Test
     fun `CurrentWeatherDTO to Weather mapping`() {
         val currentWeatherDTO = CurrentWeatherDTO(
-            location = Location(
+            location = LocationDTO(
                 name = "Poznan",
                 region = "",
                 country = "Poland",
@@ -22,7 +22,7 @@ class WeatherMapperTests {
             ),
             current = Current(
                 tempC = 2.1,
-                condition = Condition(
+                condition = ConditionDTO(
                     text = "Clear",
                     icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
                 ),
