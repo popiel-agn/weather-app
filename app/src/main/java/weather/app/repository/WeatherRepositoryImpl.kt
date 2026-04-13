@@ -13,7 +13,6 @@ class WeatherRepositoryImpl(
 ) : WeatherRepository {
 
     override suspend fun getCurrentWeather(
-        apiKey: String,
         location: String
     ): Result<Weather> {
         return try {
@@ -25,7 +24,6 @@ class WeatherRepositoryImpl(
     }
 
     override suspend fun getForecast(
-        apiKey: String,
         location: String,
         days: Int
     ): Result<Forecast> {
@@ -34,10 +32,10 @@ class WeatherRepositoryImpl(
             Result.Success(forecastResponse)
         } catch (e: Exception) {
             Result.Failure("Couldn't fetch forecast for location: $location", e)
-        }    }
+        }
+    }
 
     override suspend fun searchLocation(
-        apiKey: String,
         location: String
     ): Result<List<Location>> {
         return try {

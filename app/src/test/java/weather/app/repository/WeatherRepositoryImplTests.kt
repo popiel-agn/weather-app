@@ -1,10 +1,10 @@
 package weather.app.repository
 
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
 import weather.app.data.remote.WeatherService
 import weather.app.data.remote.dto.ConditionDTO
 import weather.app.data.remote.dto.CurrentWeatherDTO
@@ -15,7 +15,7 @@ import weather.app.utils.Result
 
 class WeatherRepositoryImplTests {
 
-    private val api = mock<WeatherService>()
+    private val api = mockk<WeatherService>()
 
     private val apiKey = "TEST_KEY"
     private val repository = WeatherRepositoryImpl(api, apiKey)
@@ -38,21 +38,21 @@ class WeatherRepositoryImplTests {
             )
         )
 
-        whenever(api.getCurrentWeather(apiKey = apiKey, location = "Poznan")).thenReturn(
-            currentWeatherDTO
-        )
+        coEvery { api.getCurrentWeather(apiKey = apiKey, location = "Poznan") } returns currentWeatherDTO
 
         // When
-        val result = repository.getCurrentWeather(apiKey = apiKey, location = "Poznan")
+        val result = repository.getCurrentWeather(location = "Poznan")
 
         // Then
         assertTrue(result is Result.Success)
     }
 
     @Test
-    fun `getCurrentWeather returns Failure`() = runBlocking {
+    fun `getCurrentWeather returns Failure when api key is incorrect`() = runBlocking {
         // When
-        val result = repository.getCurrentWeather(apiKey = "INCORRECT_API_KEY", location = "Poznan")
+        coEvery { api.getCurrentWeather(apiKey = "INCORRECT_API_KEY", location = "Poznan") }
+
+        val result = repository.getCurrentWeather(location = "Poznan")
 
         // Then
         assertTrue(result is Result.Failure)
@@ -90,12 +90,10 @@ class WeatherRepositoryImplTests {
             )
         )
 
-        whenever(api.getForecast(apiKey = apiKey, location = "Poznan", days = 2)).thenReturn(
-            forecastDTO
-        )
+        coEvery { api.getForecast(apiKey = apiKey, location = "Poznan", days = 2) } returns forecastDTO
 
         // When
-        val result = repository.getForecast(apiKey = apiKey, location = "Poznan", days = 2)
+        val result = repository.getForecast(location = "Poznan", days = 2)
 
         // Then
         assertTrue(result is Result.Success)

@@ -7,9 +7,9 @@ import weather.app.utils.Result
 
 interface WeatherRepository {
 
-    suspend fun getCurrentWeather(apiKey: String, location: String): Result<Weather>
+    suspend fun getCurrentWeather(location: String): Result<Weather>
 
-    suspend fun getForecast(apiKey: String, location: String, days: Int): Result<Forecast>
+    suspend fun getForecast(location: String, days: Int): Result<Forecast>
 
-    suspend fun searchLocation(apiKey: String, location: String): Result<List<Location>>
+    suspend fun searchLocation(location: String): Result<List<Location>>
 }
