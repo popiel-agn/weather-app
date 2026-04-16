@@ -1,9 +1,9 @@
-package weather
+package weather.app
 
 import android.app.Application
 import weather.app.di.AppComponent
-import weather.app.di.StorageModule
 import weather.app.di.DaggerAppComponent
+import weather.app.di.StorageModule
 
 class WeatherApp : Application() {
 

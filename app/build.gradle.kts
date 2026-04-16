@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     kotlin("kapt")
 }
 
@@ -15,8 +16,14 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "WEATHER_API_KEY", "\"64d1b82ecb4c40eb9a2184910260904\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 
     buildTypes {
@@ -51,6 +58,7 @@ dependencies {
     implementation(libs.okhttp3.logging)
     implementation(libs.dagger)
     implementation(libs.core.ktx)
+    implementation(libs.androidx.material3)
     kapt(libs.dagger.compiler)
     implementation(libs.datastore.preferences)
 
@@ -59,17 +67,27 @@ dependencies {
     implementation(libs.material)
     implementation(libs.lifecycle.viewmodel.ktx)
 
-    androidTestImplementation(libs.androidx.junit)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.coil.compose)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+
+    testRuntimeOnly(libs.junit.platform.launcher)
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.coroutines.test)
 
-    testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.turbine)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(kotlin("test"))
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

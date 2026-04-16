@@ -8,7 +8,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
-import weather.app.models.Location
+import weather.app.data.mappers.toDomain
+import weather.app.data.mappers.toStored
+import weather.app.models.location.Location
+import weather.app.models.location.StoredLocation
 
 private const val TAG = "SearchHistoryStorageImpl"
 private val Context.dataStore by preferencesDataStore(name = "search_history")
@@ -26,12 +29,14 @@ class SearchHistoryStorageImpl(
         val jsonString = prefs[HISTORY_KEY] ?: return emptyList()
 
         return try {
-            json.decodeFromString(jsonString)
+            val stored = json.decodeFromString<List<StoredLocation>>(jsonString)
+            stored.map { it.toDomain() }
         } catch (e: Exception) {
             Log.e(TAG, "loadHistory: ", e)
             emptyList()
         }
     }
+
 
     override suspend fun saveToHistory(location: Location) {
         val current = loadHistory().toMutableList()
@@ -39,7 +44,7 @@ class SearchHistoryStorageImpl(
         current.removeAll { it.name == location.name }
         current.add(0, location)
 
-        val trimmedHistory = current.take(10)
+        val trimmedHistory = current.take(10).map { it.toStored() }
 
         context.dataStore.edit { prefs ->
             prefs[HISTORY_KEY] = json.encodeToString(trimmedHistory)
@@ -48,7 +53,7 @@ class SearchHistoryStorageImpl(
 
     override suspend fun saveLastLocation(location: Location) {
         context.dataStore.edit { prefs ->
-            prefs[LAST_LOCATION_KEY] = json.encodeToString(location)
+            prefs[LAST_LOCATION_KEY] = json.encodeToString(location.toStored())
         }
     }
 
@@ -57,7 +62,7 @@ class SearchHistoryStorageImpl(
         val jsonString = prefs[LAST_LOCATION_KEY] ?: return null
 
         return try {
-            json.decodeFromString(jsonString)
+            json.decodeFromString<StoredLocation>(jsonString).toDomain()
         } catch (e: Exception) {
             Log.e(TAG, "loadLastLocation: ", e)
             null

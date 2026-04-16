@@ -1,6 +1,6 @@
 package weather.app.storage
 
-import weather.app.models.Location
+import weather.app.models.location.Location
 
 interface SearchHistoryStorage {
     suspend fun loadHistory(): List<Location>

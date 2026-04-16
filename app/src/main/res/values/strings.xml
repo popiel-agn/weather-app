@@ -1,3 +1,55 @@
 <resources>
     <string name="app_name">Agnieszka\'s Weather App</string>
+
+    <string name="cond_sunny">Sunny</string>
+    <string name="cond_partly_cloudy">Partly cloudy</string>
+    <string name="cond_cloudy">Cloudy</string>
+    <string name="cond_overcast">Overcast</string>
+    <string name="cond_mist">Mist</string>
+    <string name="cond_patchy_rain">Patchy rain</string>
+    <string name="cond_patchy_snow">Patchy snow</string>
+    <string name="cond_patchy_sleet">Patchy sleet</string>
+    <string name="cond_patchy_freezing_drizzle">Patchy freezing drizzle</string>
+    <string name="cond_thundery">Thundery</string>
+    <string name="cond_blowing_snow">Blowing snow</string>
+    <string name="cond_blizzard">Blizzard</string>
+    <string name="cond_fog">Fog</string>
+    <string name="cond_freezing_fog">Freezing fog</string>
+    <string name="cond_patchy_light_drizzle">Patchy light drizzle</string>
+    <string name="cond_light_drizzle">Light drizzle</string>
+    <string name="cond_freezing_drizzle">Freezing drizzle</string>
+    <string name="cond_heavy_freezing_drizzle">Heavy freezing drizzle</string>
+    <string name="cond_patchy_light_rain">Patchy light rain</string>
+    <string name="cond_light_rain">Light rain</string>
+    <string name="cond_moderate_rain">Moderate rain</string>
+    <string name="cond_heavy_rain">Heavy rain</string>
+    <string name="cond_light_freezing_rain">Light freezing rain</string>
+    <string name="cond_moderate_freezing_rain">Moderate freezing rain</string>
+    <string name="cond_light_sleet">Light sleet</string>
+    <string name="cond_moderate_sleet">Moderate sleet</string>
+    <string name="cond_patchy_light_snow">Patchy light snow</string>
+    <string name="cond_light_snow">Light snow</string>
+    <string name="cond_patchy_moderate_snow">Patchy moderate snow</string>
+    <string name="cond_moderate_snow">Moderate snow</string>
+    <string name="cond_patchy_heavy_snow">Patchy heavy snow</string>
+    <string name="cond_heavy_snow">Heavy snow</string>
+    <string name="cond_ice_pellets">Ice pellets</string>
+    <string name="cond_light_rain_shower">Light rain shower</string>
+    <string name="cond_moderate_rain_shower">Moderate rain shower</string>
+    <string name="cond_torrential_rain_shower">Torrential rain shower</string>
+    <string name="cond_light_sleet_showers">Light sleet showers</string>
+    <string name="cond_moderate_sleet_showers">Moderate sleet showers</string>
+    <string name="cond_light_snow_showers">Light snow showers</string>
+    <string name="cond_moderate_snow_showers">Moderate snow showers</string>
+    <string name="cond_light_ice_pellet_showers">Light ice pellet showers</string>
+    <string name="cond_heavy_ice_pellet_showers">Heavy ice pellet showers</string>
+    <string name="cond_patchy_rain_thunder">Patchy rain with thunder</string>
+    <string name="cond_moderate_rain_thunder">Moderate rain with thunder</string>
+    <string name="cond_patchy_snow_thunder">Patchy snow with thunder</string>
+    <string name="cond_moderate_snow_thunder">Moderate snow with thunder</string>
+
+    <string name="search">Search city</string>
+    <string name="no_results">No results</string>
+    <string name="forecast">7‑day forecast</string>
+    <string name="feels_like">Feels like %d°C</string>
 </resources>

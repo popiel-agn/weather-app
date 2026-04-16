@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import weather.app.data.remote.WeatherService
 import weather.app.data.remote.dto.ConditionDTO
-import weather.app.data.remote.dto.CurrentWeatherDTO
-import weather.app.data.remote.dto.CurrentWeatherDTO.Current
 import weather.app.data.remote.dto.ForecastDTO
-import weather.app.data.remote.dto.LocationDTO
+import weather.app.data.remote.dto.LocationForecastDTO
 import weather.app.utils.Result
 
 class WeatherRepositoryImplTests {
@@ -21,81 +19,57 @@ class WeatherRepositoryImplTests {
     private val repository = WeatherRepositoryImpl(api, apiKey)
 
     @Test
-    fun `getCurrentWeather returns Success`() = runBlocking {
-        // Given
-        val currentWeatherDTO = CurrentWeatherDTO(
-            location = LocationDTO(
+    fun `getForecast returns Success`() = runBlocking {
+        // given
+        val dto = ForecastDTO(
+            location = LocationForecastDTO(
                 name = "Poznan",
                 region = "",
                 country = "Poland",
                 lat = 52.4167,
                 lon = 16.9667,
-                localTime = "2026-04-09 22:38"
-            ), current = Current(
-                tempC = 2.1, condition = ConditionDTO(
-                    text = "Clear", icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
-                ), windKph = 13.7, humidity = 55, feelsLikeC = -1.6
-            )
-        )
-
-        coEvery { api.getCurrentWeather(apiKey = apiKey, location = "Poznan") } returns currentWeatherDTO
-
-        // When
-        val result = repository.getCurrentWeather(location = "Poznan")
-
-        // Then
-        assertTrue(result is Result.Success)
-    }
-
-    @Test
-    fun `getCurrentWeather returns Failure when api key is incorrect`() = runBlocking {
-        // When
-        coEvery { api.getCurrentWeather(apiKey = "INCORRECT_API_KEY", location = "Poznan") }
-
-        val result = repository.getCurrentWeather(location = "Poznan")
-
-        // Then
-        assertTrue(result is Result.Failure)
-    }
-
-    @Test
-    fun `getForecast() returns Success`() = runBlocking {
-        // Given
-        val forecastDTO = ForecastDTO(
-            location = LocationDTO(
-                name = "Poznan",
-                region = "",
-                country = "Poland",
-                lat = 52.4167,
-                lon = 16.9667,
-                localTime = "2026-04-09 22:38"
-            ), forecast = ForecastDTO.ForecastListDTO(
-                listOf(
+                tz_id = "Europe/Warsaw",
+                localtime = "2026-04-10 12:00",
+            ),
+            current = ForecastDTO.CurrentDTO(
+                tempC = 5.3,
+                condition = ConditionDTO("Clear", "//clear.png", 1000),
+                windKph = 8.0,
+                humidity = 70,
+                feelsLikeC = 3.0,
+                isDay = 1
+            ),
+            forecast = ForecastDTO.ForecastBlockDTO(
+                forecastDay = listOf(
                     ForecastDTO.ForecastDayDTO(
-                        date = "2026-04-10", day = ForecastDTO.DayDTO(
-                            avgTempC = 6.2, condition = ConditionDTO(
-                                text = "Clear",
-                                icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
-                            )
-                        )
-                    ), ForecastDTO.ForecastDayDTO(
-                        date = "2026-04-11", day = ForecastDTO.DayDTO(
-                            avgTempC = 4.9, condition = ConditionDTO(
-                                text = "Clear",
-                                icon = "//cdn.weatherapi.com/weather/64x64/night/113.png"
-                            )
+                        date = "2026-04-10",
+                        day = ForecastDTO.DayDTO(
+                            avgTempC = 14.2,
+                            condition = ConditionDTO("Sunny", "//sunny.png", 1004)
                         )
                     )
                 )
             )
         )
 
-        coEvery { api.getForecast(apiKey = apiKey, location = "Poznan", days = 2) } returns forecastDTO
+        coEvery { api.getForecast(apiKey, "Poznan", 7) } returns dto
 
-        // When
-        val result = repository.getForecast(location = "Poznan", days = 2)
+        // when
+        val result = repository.getForecast("Poznan", 7)
 
-        // Then
+        // then
         assertTrue(result is Result.Success)
+    }
+
+    @Test
+    fun `getForecast returns Failure when API throws`() = runBlocking {
+        // given
+        coEvery { api.getForecast(apiKey, "Poznan", 7) } throws RuntimeException("API error")
+
+        // when
+        val result = repository.getForecast("Poznan", 7)
+
+        // then
+        assertTrue(result is Result.Failure)
     }
 }

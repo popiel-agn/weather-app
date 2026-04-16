@@ -17,7 +17,9 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import weather.app.models.Location
+import weather.app.data.mappers.toSearch
+import weather.app.models.location.Location
+import weather.app.models.location.SearchLocation
 import weather.app.repository.WeatherRepository
 import weather.app.storage.SearchHistoryStorage
 import weather.app.utils.Result
@@ -34,6 +36,7 @@ class SearchViewModelTests {
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
         coEvery { storage.loadHistory() } returns emptyList()
+        coEvery { storage.loadLastLocation() } returns null
 
         viewModel = SearchViewModel(
             repository,
@@ -61,7 +64,24 @@ class SearchViewModelTests {
     @Test
     fun `onQueryChange loads suggestions when query is not blank`() = runTest {
         // given
-        val suggestions = listOf(Location("Nowy Targ"), Location("Nowy Sącz"))
+        val suggestions = listOf(
+            SearchLocation(
+                id = 1234,
+                name = "Nowy Targ",
+                country = "Poland",
+                lat = 12.345,
+                lon = 45.678,
+                url = "poland-nowy-targ"
+            ),
+            SearchLocation(
+                id = 2345,
+                name = "Nowy Sącz",
+                country = "Poland",
+                lat = 12.345,
+                lon = 12.345,
+                url = "poland-nowy-sacz"
+            ),
+        )
         coEvery { repository.searchLocation("Now") } returns Result.Success(suggestions)
 
         // when
@@ -73,8 +93,6 @@ class SearchViewModelTests {
     }
 
     // searchLocation
-
-
     @Test
     fun `searchLocation sets error on Failure`() = runTest {
         // given
@@ -90,18 +108,27 @@ class SearchViewModelTests {
     }
 
     // onLocationSelected
-
     @Test
     fun `onLocationSelected saves location to history and last location`() = runTest {
         // given
-        val location = Location("Poznań")
+        val location = Location(
+            name = "Poznan",
+            region = "",
+            country = "Country",
+            lat = 40.7128,
+            lon = -74.006,
+            id = 1976891,
+            url = "poznan-poland"
+        )
+
+        coEvery { storage.loadHistory() } returns emptyList()
+        coEvery { storage.loadLastLocation() } returns null
 
         coEvery { storage.saveToHistory(location) } just Runs
         coEvery { storage.saveLastLocation(location) } just Runs
-        coEvery { storage.loadHistory() } returns listOf(location)
 
         // when
-        viewModel.onLocationSelected(location)
+        viewModel.onLocationSelected(location.toSearch())
         runCurrent()
 
         // then
@@ -109,5 +136,14 @@ class SearchViewModelTests {
         coVerify { storage.saveLastLocation(location) }
     }
 
+    @Test
+    fun `init loads history and last location`() = runTest {
+        coEvery { storage.loadHistory() } returns emptyList()
+        coEvery { storage.loadLastLocation() } returns null
 
+        SearchViewModel(repository, storage)
+
+        coVerify { storage.loadHistory() }
+        coVerify { storage.loadLastLocation() }
+    }
 }

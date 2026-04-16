@@ -18,12 +18,12 @@ class ForecastViewModel(
     private val _uiState = MutableStateFlow(ForecastUiState())
     val uiState: StateFlow<ForecastUiState> = _uiState.asStateFlow()
 
-    fun loadForecast(location: String) {
+    fun loadForecast(url: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
             when (val result = repository.getForecast(
-                location, days = FORECAST_DAYS
+                url, days = FORECAST_DAYS
             )) {
                 is Result.Success -> {
                     _uiState.value = _uiState.value.copy(

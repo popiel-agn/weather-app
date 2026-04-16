@@ -7,11 +7,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import weather.app.models.Location
+import weather.app.data.mappers.toDomain
+import weather.app.models.location.SearchLocation
 import weather.app.repository.WeatherRepository
 import weather.app.utils.Result
-import weather.app.utils.LocationValidator
 import weather.app.storage.SearchHistoryStorage
 
 class SearchViewModel(
@@ -25,25 +26,25 @@ class SearchViewModel(
     private var searchJob: Job? = null
 
     init {
+        loadLastLocation()
         loadHistory()
     }
 
     fun onQueryChange(query: String) {
-        _uiState.value = _uiState.value.copy(query = query)
-
-        validate(query)
+        _uiState.update { it.copy(query = query) }
 
         if (query.isBlank()) {
+            _uiState.update {
+                it.copy(
+                    suggestions = emptyList(),
+                    isLoading = false
+                )
+            }
             loadHistory()
             return
         }
 
         debounceSearch(query)
-    }
-
-    private fun validate(query: String) {
-        val isValid = LocationValidator.isValid(query)
-        _uiState.value = _uiState.value.copy(isValid = isValid)
     }
 
     private fun debounceSearch(query: String) {
@@ -54,20 +55,23 @@ class SearchViewModel(
         }
     }
 
-    private fun searchLocation(query: String) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+    private suspend fun searchLocation(query: String) {
+        _uiState.update { it.copy(isLoading = true, error = null) }
 
-            when (val result = repository.searchLocation(query)) {
-                is Result.Success -> {
-                    _uiState.value = _uiState.value.copy(
+        when (val result = repository.searchLocation(query)) {
+            is Result.Success -> {
+                _uiState.update {
+                    it.copy(
                         suggestions = result.data,
                         isLoading = false,
-                        error = null
+                        history = emptyList()
                     )
                 }
-                is Result.Failure -> {
-                    _uiState.value = _uiState.value.copy(
+            }
+
+            is Result.Failure -> {
+                _uiState.update {
+                    it.copy(
                         suggestions = emptyList(),
                         isLoading = false,
                         error = result.message
@@ -77,28 +81,35 @@ class SearchViewModel(
         }
     }
 
-    fun onLocationSelected(location: Location) {
-        saveToHistory(location)
-        saveLastLocation(location)
-    }
-
     private fun loadHistory() {
         viewModelScope.launch {
             val history = historyStorage.loadHistory()
-            _uiState.value = _uiState.value.copy(history = history)
+            _uiState.update {
+                it.copy(
+                    history = history,
+                    isLoading = false
+                )
+            }
         }
     }
 
-    private fun saveToHistory(location: Location) {
+    fun onLocationSelected(searchLocation: SearchLocation) {
+        val domain = searchLocation.toDomain()
+
         viewModelScope.launch {
-            historyStorage.saveToHistory(location)
+            historyStorage.saveToHistory(domain)
+            historyStorage.saveLastLocation(domain)
             loadHistory()
+            loadLastLocation()
         }
     }
 
-    private fun saveLastLocation(location: Location) {
+    private fun loadLastLocation() {
         viewModelScope.launch {
-            historyStorage.saveLastLocation(location)
+            val last = historyStorage.loadLastLocation()
+            _uiState.update {
+                it.copy(lastLocation = last)
+            }
         }
     }
 }

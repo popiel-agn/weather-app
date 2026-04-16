@@ -3,14 +3,28 @@ package weather.app.data.remote.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class ForecastDTO(
-    val location: LocationDTO,
-    val forecast: ForecastListDTO
+    val location: LocationForecastDTO,
+    val current: CurrentDTO,
+    val forecast: ForecastBlockDTO
 ) {
     @Serializable
-    data class ForecastListDTO(
+    data class CurrentDTO(
+        @SerialName("temp_c")
+        val tempC: Double,
+        val condition: ConditionDTO,
+        @SerialName("wind_kph")
+        val windKph: Double,
+        val humidity: Int,
+        @SerialName("feelslike_c")
+        val feelsLikeC: Double,
+        @SerialName("is_day")
+        val isDay: Int
+    )
+
+    @Serializable
+    data class ForecastBlockDTO(
         @SerialName("forecastday")
         val forecastDay: List<ForecastDayDTO>
     )
@@ -23,6 +37,7 @@ data class ForecastDTO(
 
     @Serializable
     data class DayDTO(
+        @SerialName("avgtemp_c")
         val avgTempC: Double,
         val condition: ConditionDTO
     )

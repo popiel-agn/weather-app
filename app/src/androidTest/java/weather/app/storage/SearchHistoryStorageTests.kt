@@ -3,19 +3,16 @@ package weather.app.storage
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
-import org.junit.Assert.*
-import org.junit.Test
-import weather.app.models.Location
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
+import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
+import weather.app.models.location.Location
 
 class SearchHistoryStorageTests {
 
     private lateinit var context: Context
     private lateinit var storage: SearchHistoryStorageImpl
-
-    private val json = Json { ignoreUnknownKeys = true }
 
     @Before
     fun setUp() {
@@ -26,6 +23,7 @@ class SearchHistoryStorageTests {
 
         storage = SearchHistoryStorageImpl(context)
     }
+
     @Test
     fun loadHistory_returnsEmptyList_whenNoDataSaved() = runTest {
         val result = storage.loadHistory()
@@ -34,34 +32,42 @@ class SearchHistoryStorageTests {
 
     @Test
     fun saveToHistory_thenLoadHistory_returnsSavedLocation() = runTest {
-        val location = Location("Poznań")
+        val location = Location(
+            name = "Poznan",
+            region = "",
+            country = "Country",
+            lat = 40.7128,
+            lon = -74.006,
+            id = 1976891,
+            url = "poznan-poland"
+        )
 
         storage.saveToHistory(location)
         val result = storage.loadHistory()
 
         assertEquals(1, result.size)
-        assertEquals("Poznań", result.first().name)
+        assertEquals("Poznan", result.first().name)
     }
 
     @Test
     fun saveToHistory_movesExistingLocationToTop() = runTest {
-        val location1 = Location("Poznań")
-        val location2 = Location("Swarzędz")
+        val loc1 = Location(1234, "Poznan", "", "Poland", 1.0, 1.0, "poznan")
+        val loc2 = Location(2345,"Swarzedz", "", "Poland", 2.0, 2.0, "swarzedz")
 
-        storage.saveToHistory(location1)
-        storage.saveToHistory(location2)
-        storage.saveToHistory(location1)
+        storage.saveToHistory(loc1)
+        storage.saveToHistory(loc2)
+        storage.saveToHistory(loc1)
 
         val result = storage.loadHistory()
 
-        assertEquals("Poznań", result.first().name)
-        assertEquals("Swarzędz", result[1].name)
+        assertEquals("Poznan", result[0].name)
+        assertEquals("Swarzedz", result[1].name)
     }
 
     @Test
     fun saveToHistory_trimsHistoryTo10Items() = runTest {
         val items = (1..15).map {
-            Location("Location $it")
+            Location(it, "Location $it", "", "PL", 0.0, 0.0,"url-$it")
         }
 
         items.forEach { storage.saveToHistory(it) }
@@ -74,7 +80,7 @@ class SearchHistoryStorageTests {
 
     @Test
     fun saveLastLocation_thenLoadLastLocation_returnsCorrectValue() = runTest {
-        val location = Location("Paris")
+        val location = Location(1234, "Paris", "", "France", 1.0, 1.0, "paris")
 
         storage.saveLastLocation(location)
         val result = storage.loadLastLocation()
@@ -92,8 +98,9 @@ class SearchHistoryStorageTests {
     @Test
     fun loadLastLocation_returnsNull_whenJsonCorrupted() = runTest {
         val file = context.preferencesDataStoreFile("search_history")
-        val corrupted = mapOf("last_location" to "{broken json")
-        file.writeText(json.encodeToString(corrupted))
+
+        val corruptedJson = """{"last_location": "{broken json"}"""
+        file.writeText(corruptedJson)
 
         val result = storage.loadLastLocation()
 
