@@ -68,12 +68,12 @@ fun ForecastScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = forecast.searchLocation.name,
+                text = forecast.forecastLocation.name,
                 style = MaterialTheme.typography.displayMedium
             )
 
             Text(
-                text = forecast.searchLocation.localTime
+                text = forecast.forecastLocation.localTime
             )
 
             Spacer(Modifier.height(16.dp))

@@ -50,8 +50,8 @@ class ForecastMapperTests {
 
         val forecast = dto.toStored()
 
-        assertEquals(dto.location.name, forecast.searchLocation.name)
-        assertEquals(dto.location.country, forecast.searchLocation.country)
+        assertEquals(dto.location.name, forecast.forecastLocation.name)
+        assertEquals(dto.location.country, forecast.forecastLocation.country)
 
         assertEquals(dto.current.isDay == 1, forecast.current.isDay)
 

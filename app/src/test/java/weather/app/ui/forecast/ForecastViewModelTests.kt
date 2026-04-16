@@ -40,7 +40,7 @@ class ForecastViewModelTests {
     fun `loadForecast sets forecast on success`() = runTest {
         // given
         val forecast = Forecast(
-            searchLocation = ForecastLocation(
+            forecastLocation = ForecastLocation(
                 name = "Poznań",
                 region = "",
                 country = "Poland",

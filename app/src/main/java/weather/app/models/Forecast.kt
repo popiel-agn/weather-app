@@ -3,7 +3,7 @@ package weather.app.models
 import weather.app.models.location.ForecastLocation
 
 data class Forecast(
-    val searchLocation: ForecastLocation,
+    val forecastLocation: ForecastLocation,
     val current: Current,
     val days: List<ForecastDay>
 ) {
