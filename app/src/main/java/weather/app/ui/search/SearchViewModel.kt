@@ -14,6 +14,7 @@ import weather.app.models.location.SearchLocation
 import weather.app.repository.WeatherRepository
 import weather.app.utils.Result
 import weather.app.storage.SearchHistoryStorage
+import java.text.Normalizer
 
 class SearchViewModel(
     private val repository: WeatherRepository,
@@ -58,7 +59,7 @@ class SearchViewModel(
     private suspend fun searchLocation(query: String) {
         _uiState.update { it.copy(isLoading = true, error = null) }
 
-        when (val result = repository.searchLocation(query)) {
+        when (val result = repository.searchLocation(query.normalize())) {
             is Result.Success -> {
                 _uiState.update {
                     it.copy(
@@ -111,5 +112,13 @@ class SearchViewModel(
                 it.copy(lastLocation = last)
             }
         }
+    }
+
+    fun CharSequence.normalize(): String {
+        val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
+        val noDiacritics = temp.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+        return noDiacritics
+            .replace("ł", "l")
+            .replace("Ł", "L")
     }
 }

@@ -69,7 +69,7 @@ fun ForecastScreen(
         ) {
             Text(
                 text = forecast.searchLocation.name,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.displayMedium
             )
 
             Text(
@@ -80,7 +80,7 @@ fun ForecastScreen(
 
             // current temp
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 WeatherIcon(
                     code = current.condition.code,
